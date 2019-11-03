@@ -1,6 +1,8 @@
 #include "main.h"
 
-void initialize() {}
+void initialize() {
+	pros::lcd::initialize();
+}
 
 void disabled() {}
 

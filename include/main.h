@@ -4,7 +4,7 @@
  * Contains common definitions and header files used throughout your PROS
  * project.
  *
- * Copyright (c) 2017-2018, Purdue University ACM SIGBots.
+ * Copyright (c) 2017-2019, Purdue University ACM SIGBots.
  * All rights reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -35,7 +35,6 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
-#include "opcontrol.hpp"
 
 /**
  * You should add more #includes here
@@ -51,10 +50,11 @@
  * concurrently! The okapi namespace will export all symbols inside the pros
  * namespace.
  */
- 
 // using namespace pros;
 // using namespace pros::literals;
 using namespace okapi;
+
+#include "opcontrol.hpp"
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure

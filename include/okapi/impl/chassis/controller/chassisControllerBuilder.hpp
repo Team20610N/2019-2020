@@ -10,6 +10,7 @@
 #include "okapi/api/chassis/controller/chassisControllerIntegrated.hpp"
 #include "okapi/api/chassis/controller/chassisControllerPid.hpp"
 #include "okapi/api/chassis/controller/defaultOdomChassisController.hpp"
+#include "okapi/api/chassis/model/hDriveModel.hpp"
 #include "okapi/api/chassis/model/skidSteerModel.hpp"
 #include "okapi/api/chassis/model/xDriveModel.hpp"
 #include "okapi/api/util/logging.hpp"
@@ -100,6 +101,51 @@ class ChassisControllerBuilder {
                                        const std::shared_ptr<AbstractMotor> &itopRight,
                                        const std::shared_ptr<AbstractMotor> &ibottomRight,
                                        const std::shared_ptr<AbstractMotor> &ibottomLeft);
+
+  /**
+   * Sets the motors using an h-drive layout.
+   *
+   * @param ileft The left motor.
+   * @param iright The right motor.
+   * @param imiddle The middle motor.
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &
+  withMotors(const Motor &ileft, const Motor &iright, const Motor &imiddle);
+
+  /**
+   * Sets the motors using an h-drive layout.
+   *
+   * @param ileft The left motor.
+   * @param iright The right motor.
+   * @param imiddle The middle motor.
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &
+  withMotors(const MotorGroup &ileft, const MotorGroup &iright, const MotorGroup &imiddle);
+
+  /**
+   * Sets the motors using an h-drive layout.
+   *
+   * @param ileft The left motor.
+   * @param iright The right motor.
+   * @param imiddle The middle motor.
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &
+  withMotors(const MotorGroup &ileft, const MotorGroup &iright, const Motor &imiddle);
+
+  /**
+   * Sets the motors using an h-drive layout.
+   *
+   * @param ileft The left motor.
+   * @param iright The right motor.
+   * @param imiddle The middle motor.
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &withMotors(const std::shared_ptr<AbstractMotor> &ileft,
+                                       const std::shared_ptr<AbstractMotor> &iright,
+                                       const std::shared_ptr<AbstractMotor> &imiddle);
 
   /**
    * Sets the sensors. The default sensors are the motor's integrated encoders.
@@ -265,7 +311,8 @@ class ChassisControllerBuilder {
   ChassisControllerBuilder &withMaxVoltage(double imaxVoltage);
 
   /**
-   * Sets the TimeUtilFactory used when building a ChassisController. The default is the static
+   * Sets the TimeUtilFactory used when building a ChassisController. This instance will be given
+   * to the ChassisController (not to controllers it uses). The default is the static
    * TimeUtilFactory.
    *
    * @param itimeUtilFactory The TimeUtilFactory.
@@ -275,14 +322,27 @@ class ChassisControllerBuilder {
   withChassisControllerTimeUtilFactory(const TimeUtilFactory &itimeUtilFactory);
 
   /**
-   * Sets the TimeUtilFactory used when building a ClosedLoopController. The default is the static
-   * TimeUtilFactory.
+   * Sets the TimeUtilFactory used when building a ClosedLoopController. This instance will be given
+   * to any ClosedLoopController instances. The default is the static TimeUtilFactory.
    *
    * @param itimeUtilFactory The TimeUtilFactory.
    * @return An ongoing builder.
    */
   ChassisControllerBuilder &
   withClosedLoopControllerTimeUtilFactory(const TimeUtilFactory &itimeUtilFactory);
+
+  /**
+   * Creates a new ConfigurableTimeUtilFactory with the given parameters. Given to any
+   * ClosedLoopController instances.
+   *
+   * @param iatTargetError The minimum error to be considered settled.
+   * @param iatTargetDerivative The minimum error derivative to be considered settled.
+   * @param iatTargetTime The minimum time within atTargetError to be considered settled.
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &withClosedLoopControllerTimeUtil(double iatTargetError = 50,
+                                                             double iatTargetDerivative = 5,
+                                                             const QTime &iatTargetTime = 250_ms);
 
   /**
    * Sets the TimeUtilFactory used when building an Odometry. The default is the static
@@ -300,6 +360,31 @@ class ChassisControllerBuilder {
    * @return An ongoing builder.
    */
   ChassisControllerBuilder &withLogger(const std::shared_ptr<Logger> &ilogger);
+
+  /**
+   * Parents the internal tasks started by this builder to the current task, meaning they will be
+   * deleted once the current task is deleted. The `initialize` and `competition_initialize` tasks
+   * are never parented to. This is the default behavior.
+   *
+   * Read more about this in the [builders and tasks tutorial]
+   * (docs/tutorials/concepts/builders-and-tasks.md).
+   *
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &parentedToCurrentTask();
+
+  /**
+   * Prevents parenting the internal tasks started by this builder to the current task, meaning they
+   * will not be deleted once the current task is deleted. This can cause runaway tasks, but is
+   * sometimes the desired behavior (e.x., if you want to use this builder once in `autonomous` and
+   * then again in `opcontrol`).
+   *
+   * Read more about this in the [builders and tasks tutorial]
+   * (docs/tutorials/concepts/builders-and-tasks.md).
+   *
+   * @return An ongoing builder.
+   */
+  ChassisControllerBuilder &notParentedToCurrentTask();
 
   /**
    * Builds the ChassisController. Throws a std::runtime_exception if no motors were set.
@@ -331,10 +416,19 @@ class ChassisControllerBuilder {
     std::shared_ptr<AbstractMotor> bottomLeft;
   };
 
-  bool hasMotors{false};  // Used to verify motors were passed
-  bool isSkidSteer{true}; // Whether to use SkidSteerMotors or XDriveMotors
+  struct HDriveMotors {
+    std::shared_ptr<AbstractMotor> left;
+    std::shared_ptr<AbstractMotor> right;
+    std::shared_ptr<AbstractMotor> middle;
+  };
+
+  enum class DriveMode { SkidSteer, XDrive, HDrive };
+
+  bool hasMotors{false}; // Used to verify motors were passed
+  DriveMode driveMode{DriveMode::SkidSteer};
   SkidSteerMotors skidSteerMotors;
   XDriveMotors xDriveMotors;
+  HDriveMotors hDriveMotors;
 
   bool sensorsSetByUser{false}; // Used so motors don't overwrite sensors set manually
   std::shared_ptr<ContinuousRotarySensor> leftSensor{nullptr};
@@ -369,11 +463,16 @@ class ChassisControllerBuilder {
 
   double maxVoltage{12000};
 
+  bool isParentedToCurrentTask{true};
+
   std::shared_ptr<ChassisControllerPID> buildCCPID();
   std::shared_ptr<ChassisControllerIntegrated> buildCCI();
   std::shared_ptr<DefaultOdomChassisController>
   buildDOCC(std::shared_ptr<ChassisController> chassisController);
+
+  std::shared_ptr<ChassisModel> makeChassisModel();
   std::shared_ptr<SkidSteerModel> makeSkidSteerModel();
   std::shared_ptr<XDriveModel> makeXDriveModel();
+  std::shared_ptr<HDriveModel> makeHDriveModel();
 };
 } // namespace okapi
