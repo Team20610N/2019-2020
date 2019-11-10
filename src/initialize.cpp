@@ -1,7 +1,8 @@
 #include "main.h"
 
 void initialize() {
-	pros::lcd::initialize();
+	pros::delay(2000);
+	runScreen();
 }
 
 void disabled() {}

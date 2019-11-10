@@ -56,6 +56,7 @@ using namespace okapi;
 
 #include "opcontrol.hpp"
 #include "Chassis.hpp"
+#include "Screen.hpp"
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
