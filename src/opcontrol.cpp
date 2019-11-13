@@ -10,7 +10,6 @@ void opcontrol() {
   Motor leftRollerMotor(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
   
   // Sets the drivetrain to hold
-  driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);
   liftMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   rightRollerMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   leftRollerMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
@@ -19,6 +18,8 @@ void opcontrol() {
   ControllerButton rightAutonButton(ControllerDigital::right);
   ControllerButton leftScreenButton(ControllerDigital::up);
   ControllerButton rightScreenButton(ControllerDigital::left);
+  ControllerButton intakeInButton(ControllerDigital::L1);
+  ControllerButton intakeOutButton(ControllerDigital::L2);
   
   bool rollersLock = false;
   bool liftLock = false;
@@ -39,6 +40,16 @@ void opcontrol() {
     if (abs(partner.getAnalog(ControllerAnalog::leftY)) > 0.3) {
       rightRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
       leftRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
+      rollersLock = false;
+    }
+    else if (intakeInButton.isPressed()) {
+      rightRollerMotor.moveVelocity(100);
+      leftRollerMotor.moveVelocity(100);
+      rollersLock = false;
+    }
+    else if (intakeOutButton.isPressed()) {
+      rightRollerMotor.moveVelocity(-100);
+      leftRollerMotor.moveVelocity(-100);
       rollersLock = false;
     }
     else if (rollersLock == false) {

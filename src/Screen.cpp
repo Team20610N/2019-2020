@@ -238,12 +238,12 @@ void runScreen() {
 }
 
 
-int robotHeading;
-int middleEncoderValue;
-int leftMotorValue;
-int rightMotorValue;
+double robotHeading;
+double middleEncoderValue;
+double leftMotorValue;
+double rightMotorValue;
 
-void updateLineVariable(int line, float value) {
+void updateLineVariable(int line, double value) {
   switch (line){
     case 1: robotHeading = value;
       break;

@@ -26,6 +26,6 @@ extern bool test3;
 extern void SetAutonButton(int slot);
 
 void runScreen();
-void updateLineVariable(int line, float value);
+void updateLineVariable(int line, double value);
 void updateLineVariable(int line, std::string value);
 void startAuton(void*);
