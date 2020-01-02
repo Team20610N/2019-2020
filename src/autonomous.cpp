@@ -40,12 +40,12 @@ void redSmall() {
 }
 void blueLarge() {
   Roller.moveVelocity(100);
-  pros::delay(2000);
+  pros::delay(200);
   Roller.moveVelocity(0);
 }
 void blueSmall() {
   Roller.moveVelocity(100);
-  pros::delay(2000);
+  pros::delay(200);
   Roller.moveVelocity(0);
 }
 

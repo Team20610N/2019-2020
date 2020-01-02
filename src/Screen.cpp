@@ -267,18 +267,19 @@ bool waitAuton = false;
 long currentTime = pros::millis();
 void startAuton(void* param) {
   while(true) {
-    if (toggleAuton) {
+    if (toggleAuton == true) {
       if (!waitAuton) {
         currentTime = pros::millis();
         waitAuton = true;
         printf("Setting time\n");
       }
-      // else {
         lv_label_set_text(label_cancel,   ("Auton Starting In " +
                                           to_string(5 - (((int)pros::millis() - (int)currentTime) / 1000)) +
                                           " Seconds.").c_str());
       
-      if (currentTime < pros::millis() - 5000) {
+      // std::cout << currentTime << std::endl;
+      // std::cout << pros::millis() - 5000 << std::endl;
+      if ((currentTime + 5000) < (pros::millis() + 5000) - 5000) {
         toggleAuton = false;
         waitAuton = false;
         lv_obj_del(page);
@@ -290,6 +291,7 @@ void startAuton(void* param) {
     else {
       waitAuton = false;
     }
+
     pros::delay(20);
   }
 }
