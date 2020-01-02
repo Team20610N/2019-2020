@@ -143,8 +143,9 @@ lv_obj_t * txt;
 static const char * btnm_map[] = {"BlueLarge", "BlueSmall", "RedLarge", "RedSmall", ""};
 
 void runScreen() {
+  pros::Task startAuton_TR(startAuton, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "My Task");
   //Sets theme to alien.
-  theme_main = lv_theme_alien_init(55, NULL);
+  theme_main = lv_theme_alien_init(100, NULL);
   lv_theme_set_current(theme_main);
 
   tabview = lv_tabview_create(lv_scr_act(), NULL);
@@ -263,8 +264,8 @@ void updateLineVariable(int line, double value) {
 }
 
 bool waitAuton = false;
-long currentTime;
-void startAuton(void*) {
+long currentTime = pros::millis();
+void startAuton(void* param) {
   while(true) {
     if (toggleAuton) {
       if (!waitAuton) {
@@ -272,11 +273,11 @@ void startAuton(void*) {
         waitAuton = true;
         printf("Setting time\n");
       }
-      else
+      // else {
         lv_label_set_text(label_cancel,   ("Auton Starting In " +
                                           to_string(5 - (((int)pros::millis() - (int)currentTime) / 1000)) +
                                           " Seconds.").c_str());
-
+      
       if (currentTime < pros::millis() - 5000) {
         toggleAuton = false;
         waitAuton = false;
@@ -289,7 +290,6 @@ void startAuton(void*) {
     else {
       waitAuton = false;
     }
-
     pros::delay(20);
   }
 }

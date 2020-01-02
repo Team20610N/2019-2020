@@ -1,8 +1,9 @@
 #include "main.h"
 #pragma once
 
-// Globiling the drive train objects
-// extern std::shared_ptr<ChassisController> chassis;
-// extern std::shared_ptr<okapi::HDriveModel> driveTrain;
+extern Motor leftMotor;
+extern Motor rightMotor;
+extern Motor middleMotor;
+extern std::shared_ptr<ChassisController> chassis;
 
 extern void ChassisOpcontrol(void* param);
