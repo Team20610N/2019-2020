@@ -1,52 +1,45 @@
 #include "main.h"
+#define moveDelay pros::delay(100)
 
 // Default values
 bool isAuton = false;
 
 void redLarge() {
   Roller.moveVelocity(100);
-  pros::delay(2000);
+  pros::delay(500);
   Roller.moveVelocity(0);
-  // Roller.moveVelocity(100);
-  // pros::delay(500);
-  // Roller.moveVelocity(0);
-  // chassis->moveDistance(-1_ft);
-  // chassis->turnAngle(90);
-  // Roller.moveVelocity(50);
-  // chassis->moveDistance(1_ft);
-  // Roller.moveVelocity(0);
-  // chassis->turnAngle(90);
-  // //Move arm up and tray
-  // chassis->moveDistanceAsync(1_ft);
-  // Roller.moveVelocity(-50);
-  // pros::delay(500);
-  // Roller.moveVelocity(0);
-  // chassis->moveDistance(-1_ft);
+  chassis->moveDistance(-1_ft);
+  chassis->turnAngle(90_deg);
+  Roller.moveVelocity(50);
+  chassis->moveDistance(1_ft);
+  Roller.moveVelocity(0);
+  chassis->turnAngle(90_deg);
+  //Move arm up and tray
+  chassis->moveDistanceAsync(1_ft);
+  Roller.moveVelocity(-50);
+  pros::delay(500);
+  Roller.moveVelocity(0);
+  chassis->moveDistance(-1_ft);
 } 
 void redSmall() {
-  Roller.moveVelocity(100);
-  pros::delay(2000);
+  Roller.moveVelocity(150);
+  chassis->moveDistance(4_ft);
   Roller.moveVelocity(0);
-  // Roller.moveVelocity(150);
-  // chassis->moveDistance(4_ft);
-  // Roller.moveVelocity(0);
-  // chassis->moveDistance(-3.5_ft);
-  // chassis->turnAngle(90_deg);
-  // chassis->moveDistance(0.25_ft);
+  chassis->moveDistance(-3.5_ft);
+  chassis->turnAngle(90_deg);
+  chassis->moveDistance(0.25_ft);
   
-  // AnglerMotor.moveRelative(1000, 100);
-  
-  // chassis->moveDistance(-1);
+  AnglerMotor.moveRelative(-500, 40);
+  pros::delay(2000);
+  // while (!AnglerMotor.isStopped()) {pros::delay(200);}
+  chassis->moveDistance(-1_ft);
+  // while (!chassis->isSettled()) {pros::delay(200);}
+  AnglerMotor.moveRelative(500, 40);
+  // while (!AnglerMotor.isStopped()) {pros::delay(200);}
 }
 void blueLarge() {
-  Roller.moveVelocity(100);
-  pros::delay(200);
-  Roller.moveVelocity(0);
 }
 void blueSmall() {
-  Roller.moveVelocity(100);
-  pros::delay(200);
-  Roller.moveVelocity(0);
 }
 
 // Part of the auton selector code

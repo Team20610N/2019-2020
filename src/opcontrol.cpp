@@ -11,6 +11,7 @@ Motor AnglerMotor(13, false, AbstractMotor::gearset::red, AbstractMotor::encoder
 MotorGroup Roller({-11, 20});
 
 void opcontrol() {
+  pros::delay(20000000);
   
   // Seting the motor brake mode to hold
   LeftMotor.setBrakeMode(AbstractMotor::brakeMode::hold);

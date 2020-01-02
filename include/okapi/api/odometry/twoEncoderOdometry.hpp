@@ -26,14 +26,11 @@ class TwoEncoderOdometry : public Odometry {
    * @param itimeUtil The TimeUtil.
    * @param imodel The chassis model for reading sensors.
    * @param ichassisScales The chassis dimensions.
-   * @param iwheelVelDelta The maximum delta between wheel velocities to consider the robot as
-   * driving straight.
    * @param ilogger The logger this instance will log to.
    */
   TwoEncoderOdometry(const TimeUtil &itimeUtil,
                      const std::shared_ptr<ReadOnlyChassisModel> &imodel,
                      const ChassisScales &ichassisScales,
-                     const QSpeed &iwheelVelDelta = 0.0001_mps,
                      const std::shared_ptr<Logger> &ilogger = Logger::getDefaultLogger());
 
   virtual ~TwoEncoderOdometry() = default;
@@ -70,15 +67,20 @@ class TwoEncoderOdometry : public Odometry {
    */
   std::shared_ptr<ReadOnlyChassisModel> getModel() override;
 
+  /**
+   * @return The internal ChassisScales.
+   */
+  ChassisScales getScales() override;
+
   protected:
   std::shared_ptr<Logger> logger;
   std::unique_ptr<AbstractRate> rate;
   std::unique_ptr<AbstractTimer> timer;
   std::shared_ptr<ReadOnlyChassisModel> model;
   ChassisScales chassisScales;
-  QSpeed wheelVelDelta;
   OdomState state;
   std::valarray<std::int32_t> newTicks{0, 0, 0}, tickDiff{0, 0, 0}, lastTicks{0, 0, 0};
+  const std::int32_t maximumTickDiff{1000};
 
   /**
    * Does the math, side-effect free, for one odom step.

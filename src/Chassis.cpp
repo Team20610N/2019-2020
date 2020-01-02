@@ -18,7 +18,8 @@ Motor middleMotor(6, false, AbstractMotor::gearset::red, AbstractMotor::encoderU
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
   .withMotors(leftMotor, rightMotor, middleMotor)
   .withSensors(leftEncoder, rightEncoder)
-  .withDimensions({{4_in, 10_in}, imev5RedTPR})
+  // .withDimensions(imev5RedTPR, {4_in, 10_in})
+  .withDimensions(AbstractMotor::gearset::red, {{4_in, 10_in}, imev5RedTPR})
   .withMaxVelocity(100)
   .withLogger(
       std::make_shared<Logger>(
