@@ -1,11 +1,8 @@
 #include "main.h"
-// #include "fstream"
 
 ADIEncoder leftEncoder('C', 'D');
 ADIEncoder rightEncoder('A', 'B');
 ADIGyro Gyro('E',1);
-
-// std::shared_ptr<ChassisController> chassis;
 
 int newHeading = 0;
 int JoisticHeading = 0;
@@ -18,9 +15,8 @@ Motor middleMotor(6, false, AbstractMotor::gearset::red, AbstractMotor::encoderU
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
   .withMotors(leftMotor, rightMotor, middleMotor)
   .withSensors(leftEncoder, rightEncoder)
-  // .withDimensions(imev5RedTPR, {4_in, 10_in})
   .withDimensions(AbstractMotor::gearset::red, {{4_in, 10_in}, imev5RedTPR})
-  .withMaxVelocity(100)
+  .withMaxVelocity(60)
   .withLogger(
       std::make_shared<Logger>(
           TimeUtilFactory::createDefault().getTimer(), // It needs a Timer
@@ -32,9 +28,6 @@ std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
 
 // Thread that controls the chassis 
 void ChassisOpcontrol(void* param) {
-
-  // chassis declaration
-    
   // // Write GyroHeading and ChassisVelocity to a file
   // FILE *fp = fopen("/usd/Chassis_Diagnostics", "a");
   // std::string diagnosticsStr = "Testing\n";
@@ -43,7 +36,7 @@ void ChassisOpcontrol(void* param) {
     
   // assigning the chassis to a H-drive model
   std::shared_ptr<okapi::HDriveModel> driveTrain = std::dynamic_pointer_cast<HDriveModel>(chassis->getModel());
-  // driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);  
+  driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);
   
   int leftMotorControl = 0;
   int rightMotorControl = 0;
@@ -56,20 +49,19 @@ void ChassisOpcontrol(void* param) {
   ControllerButton fieldCentericToggle(ControllerDigital::A);
   ControllerButton gyroReset(ControllerDigital::X);
 
-  while (isAuton == false) { // isAuton == false
+  while (isAuton == false) {
     chassisHeading = Gyro.get() / 10;
     newHeading = chassisHeading - JoisticHeading;
 
     //Updates display values.
 		updateLineVariable(1, chassisHeading);
-		updateLineVariable(2, JoisticHeading); //middleEncoder.controllerGet()
+		updateLineVariable(2, JoisticHeading);
 		updateLineVariable(3, leftEncoder.controllerGet());
 		updateLineVariable(4, rightEncoder.controllerGet());
     
     // Graphs the drive motor temps
     lv_chart_set_next(chart, GreenLine, leftMotor.getTemperature());
     lv_chart_set_next(chart, LimeLine, rightMotor.getTemperature());
-    lv_chart_set_next(chart, SilverLine, middleMotor.getTemperature());
     
     forward = master.getAnalog(ControllerAnalog::leftY)*100;
     if (abs(forward) < 0.3) {
@@ -112,14 +104,6 @@ void ChassisOpcontrol(void* param) {
                           master.getAnalog(ControllerAnalog::leftY), 
                           master.getAnalog(ControllerAnalog::rightX), 0.3);
     }
-    //   chassisBrake = false;
-    
-    // if (chassisBrake == false) {
-    //   leftMotor.moveRelative(0, 200);
-    //   rightMotor.moveRelative(0, 200);
-    //   middleMotor.moveRelative(0, 200);
-    //   chassisBrake = true;
-    // }
     pros::delay(20);
   }
 }

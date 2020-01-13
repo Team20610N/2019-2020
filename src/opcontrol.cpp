@@ -4,17 +4,17 @@
 Controller master (ControllerId::master);
 Controller partner (ControllerId::partner);
 
-Motor LeftMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor LiftMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 Motor RightRollerMotor(11, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor LeftRollerMotor(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor AnglerMotor(13, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 MotorGroup Roller({-11, 20});
 
 void opcontrol() {
-  pros::delay(20000000);
-  
+  isAuton = false;
+  chassis->setTurnsMirrored(false);
   // Seting the motor brake mode to hold
-  LeftMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
+  LiftMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   RightRollerMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   LeftRollerMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   
@@ -37,6 +37,11 @@ void opcontrol() {
   // Start the thread for the base
   pros::Task ChassisOpcontrol_TR(ChassisOpcontrol, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "My Task");
   while (true) {
+    lv_chart_set_next(chart, NavyLine, LeftRollerMotor.getTemperature());
+    lv_chart_set_next(chart, BlueLine, RightRollerMotor.getTemperature());
+    lv_chart_set_next(chart, SilverLine, AnglerMotor.getTemperature());
+    lv_chart_set_next(chart, OrangeLine, LiftMotor.getTemperature());
+    
     // changes the active auton using the controller
     if (leftAutonButton.changedToPressed()) {selectedAuton = (selectedAuton - 1 + 4) % 4;SetAutonButton(selectedAuton);}
     else if (rightAutonButton.changedToPressed()) {selectedAuton = (selectedAuton + 1 + 4) % 4;SetAutonButton(selectedAuton);}
@@ -45,6 +50,7 @@ void opcontrol() {
     if (leftScreenButton.changedToPressed()) {lv_tabview_set_tab_act(tabview, (lv_tabview_get_tab_act(tabview) + 1 + 3) % 3, false);}
     else if (rightScreenButton.changedToPressed()) {lv_tabview_set_tab_act(tabview, (lv_tabview_get_tab_act(tabview) - 1 + 3) % 3, false);}
 
+    // Roller controls
     if (abs(partner.getAnalog(ControllerAnalog::leftY)) > 0.3) {
       RightRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
       LeftRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
@@ -55,9 +61,14 @@ void opcontrol() {
       LeftRollerMotor.moveVelocity(100);
       rollersLock = false;
     }
-    else if (intakeOutButton.isPressed() || partner.getDigital(ControllerDigital::R2)) {
+    else if (intakeOutButton.isPressed()) {
       RightRollerMotor.moveVelocity(-100);
       LeftRollerMotor.moveVelocity(-100);
+      rollersLock = false;
+    }
+    else if (partner.getDigital(ControllerDigital::R2)) {
+      RightRollerMotor.moveVelocity(-75);
+      LeftRollerMotor.moveVelocity(-75);
       rollersLock = false;
     }
     else if (rollersLock == false) {
@@ -66,6 +77,7 @@ void opcontrol() {
       rollersLock = true;
     }
     
+    // Angler motor
     if (partner.getDigital(ControllerDigital::L2) || anglerOutButton.isPressed()) {
       AnglerMotor.moveVelocity(50);
       anglerLock = false;
@@ -79,32 +91,19 @@ void opcontrol() {
       anglerLock = true;
     }
     
+    // Lift Control
     if (abs(partner.getAnalog(ControllerAnalog::rightY)) > 0.3) {
-      LeftMotor.moveVelocity(partner.getAnalog(ControllerAnalog::rightY)*200);
-      AnglerMotor.moveVelocity(-LeftMotor.getActualVelocity() / 1.8);
-      liftLock = false;
-      anglerLock = false;
-    }
-    else if (partner.getDigital(ControllerDigital::up)) {
-      LeftMotor.moveVelocity(100);
-      AnglerMotor.moveVelocity(-LeftMotor.getActualVelocity() / 1.8);
-      liftLock = false;
-      anglerLock = false;
-    }
-    else if (partner.getDigital(ControllerDigital::down)) {
-      LeftMotor.moveVelocity(-100);
-      AnglerMotor.moveVelocity(-LeftMotor.getActualVelocity() / 1.8);
+      LiftMotor.moveVelocity(partner.getAnalog(ControllerAnalog::rightY)*200);
+      AnglerMotor.moveVelocity(-LiftMotor.getActualVelocity() / 1.8);
       liftLock = false;
       anglerLock = false;
     }
     else if (abs(master.getAnalog(ControllerAnalog::rightY)) > 0.6) {
-      LeftMotor.moveVelocity(master.getAnalog(ControllerAnalog::rightY)*200);
-      AnglerMotor.moveVelocity(-LeftMotor.getActualVelocity() / 1.8);
+      LiftMotor.moveVelocity(master.getAnalog(ControllerAnalog::rightY)*200);
       liftLock = false;
-      anglerLock = false;
     }
     else if (liftLock == false) {
-      LeftMotor.moveRelative(0, 100);
+      LiftMotor.moveRelative(0, 100);
       liftLock = true;
     }
     
