@@ -9,11 +9,12 @@ int JoisticHeading = 0;
 int chassisHeading;
 bool chassisBrake = false;
 
-Motor leftMotor(7, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor rightMotor(5, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor middleMotor(6, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor frontLeftMotor(1, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor frontRightMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor backLeftMotor(4, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor backRightMotor(3, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
-  .withMotors(leftMotor, rightMotor, middleMotor)
+  .withMotors(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor)
   .withSensors(leftEncoder, rightEncoder)
   .withDimensions(AbstractMotor::gearset::red, {{4_in, 10_in}, imev5RedTPR})
   .withMaxVelocity(60)
@@ -35,7 +36,7 @@ void ChassisOpcontrol(void* param) {
   // fclose(fp);
     
   // assigning the chassis to a H-drive model
-  std::shared_ptr<okapi::HDriveModel> driveTrain = std::dynamic_pointer_cast<HDriveModel>(chassis->getModel());
+  std::shared_ptr<okapi::XDriveModel> driveTrain = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
   driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);
   
   int leftMotorControl = 0;
@@ -60,8 +61,8 @@ void ChassisOpcontrol(void* param) {
 		updateLineVariable(4, rightEncoder.controllerGet());
     
     // Graphs the drive motor temps
-    lv_chart_set_next(chart, GreenLine, leftMotor.getTemperature());
-    lv_chart_set_next(chart, LimeLine, rightMotor.getTemperature());
+    lv_chart_set_next(chart, GreenLine, frontLeftMotor.getTemperature());
+    lv_chart_set_next(chart, LimeLine, frontRightMotor.getTemperature());
     
     forward = master.getAnalog(ControllerAnalog::leftY)*100;
     if (abs(forward) < 0.3) {
@@ -95,14 +96,14 @@ void ChassisOpcontrol(void* param) {
     }
     
     if (FieldCenteric == true) {
-      driveTrain->hArcade((straff / 100),
+      driveTrain->xArcade((turning / 100),
                           (forward / 100),
-                          (turning / 100), 0);
+                          (straff / 100), 0);
     }
     else {
-      driveTrain->hArcade(master.getAnalog(ControllerAnalog::leftX), 
+      driveTrain->xArcade(master.getAnalog(ControllerAnalog::rightX), 
                           master.getAnalog(ControllerAnalog::leftY), 
-                          master.getAnalog(ControllerAnalog::rightX), 0.3);
+                          master.getAnalog(ControllerAnalog::leftX), 0.3);
     }
     pros::delay(20);
   }

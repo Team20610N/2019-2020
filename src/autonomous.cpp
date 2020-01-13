@@ -15,13 +15,13 @@ void redLarge() {
   Roller.moveVelocity(0);
   
   // chassis->moveDistance(-2.4_ft);
-  leftMotor.moveRelative(-4600, 100);
-  rightMotor.moveRelative(-4600, 100);
+  // leftMotor.moveRelative(-4600, 100);
+  // rightMotor.moveRelative(-4600, 100);
   pros::delay(2000);
   chassis->turnAngle(135_deg);
   Roller.moveVelocity(200);
-  leftMotor.moveRelative(1500, 100);
-  rightMotor.moveRelative(1500, 100);
+  // leftMotor.moveRelative(1500, 100);
+  // rightMotor.moveRelative(1500, 100);
   pros::delay(1000);
   Roller.moveVelocity(0);
   
@@ -35,8 +35,8 @@ void redLarge() {
   chassis->moveDistance(5_in);
   Roller.moveVelocity(-100);
   pros::delay(900);
-  leftMotor.moveRelative(-1000, 100);
-  rightMotor.moveRelative(-1000, 100);
+  // leftMotor.moveRelative(-1000, 100);
+  // rightMotor.moveRelative(-1000, 100);
   pros::delay(1000);
   Roller.moveVelocity(0);
   LiftMotor.moveRelative(0, 0);
@@ -73,13 +73,13 @@ Roller.moveVelocity(80);
   Roller.moveVelocity(0);
   
   // chassis->moveDistance(-2.4_ft);
-  leftMotor.moveRelative(-4600, 100);
-  rightMotor.moveRelative(-4600, 100);
+  // leftMotor.moveRelative(-4600, 100);
+  // rightMotor.moveRelative(-4600, 100);
   pros::delay(2000);
   chassis->turnAngle(135_deg);
   Roller.moveVelocity(200);
-  leftMotor.moveRelative(1500, 100);
-  rightMotor.moveRelative(1500, 100);
+  // leftMotor.moveRelative(1500, 100);
+  // rightMotor.moveRelative(1500, 100);
   pros::delay(1000);
   Roller.moveVelocity(0);
   
@@ -93,8 +93,8 @@ Roller.moveVelocity(80);
   chassis->moveDistance(5_in);
   Roller.moveVelocity(-100);
   pros::delay(900);
-  leftMotor.moveRelative(-1000, 100);
-  rightMotor.moveRelative(-1000, 100);
+  // leftMotor.moveRelative(-1000, 100);
+  // rightMotor.moveRelative(-1000, 100);
   pros::delay(1000);
   Roller.moveVelocity(0);
   LiftMotor.moveRelative(0, 0);
@@ -103,12 +103,12 @@ Roller.moveVelocity(80);
 }
 
 void blueSmall() {
-  // chassis->moveDistance(1_ft);
-  // chassis->setMaxVelocity(100);
-  // chassis->moveDistance(1_ft);
-  chassis->setTurnsMirrored(true);
-  redSmall();
-  chassis->setTurnsMirrored(false);
+  chassis->moveDistance(1_ft);
+  chassis->setMaxVelocity(100);
+  chassis->moveDistance(1_ft);
+  // chassis->setTurnsMirrored(true);
+  // redSmall();
+  // chassis->setTurnsMirrored(false);
 }
 
 // Part of the auton selector code
