@@ -4,13 +4,16 @@
 Controller master (ControllerId::master);
 Controller partner (ControllerId::partner);
 
-Motor LiftMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor RightRollerMotor(11, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor LiftMotor(11, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor RightRollerMotor(16, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor LeftRollerMotor(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-Motor AnglerMotor(13, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-MotorGroup Roller({-11, 20});
+Motor AnglerMotor(12, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+MotorGroup Roller({-16, 20});
+
+Potentiometer AnglerAngle ('A');
 
 void opcontrol() {
+  int startingAnglerAngle = AnglerAngle.get();
   isAuton = false;
   chassis->setTurnsMirrored(false);
   // Seting the motor brake mode to hold
@@ -51,6 +54,15 @@ void opcontrol() {
     else if (rightScreenButton.changedToPressed()) {lv_tabview_set_tab_act(tabview, (lv_tabview_get_tab_act(tabview) - 1 + 3) % 3, false);}
 
     // Roller controls
+    if (AnglerAngle.get() <= startingAnglerAngle) {
+      Roller.setBrakeMode(AbstractMotor::brakeMode::coast);
+      // Roller.moveVelocity(1);
+    }
+    else {
+      Roller.setBrakeMode(AbstractMotor::brakeMode::hold);
+      rollersLock = false;
+    }
+    
     if (abs(partner.getAnalog(ControllerAnalog::leftY)) > 0.3) {
       RightRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
       LeftRollerMotor.moveVelocity(partner.getAnalog(ControllerAnalog::leftY)*200);
@@ -77,19 +89,29 @@ void opcontrol() {
       rollersLock = true;
     }
     
-    // Angler motor
-    if (partner.getDigital(ControllerDigital::L2) || anglerOutButton.isPressed()) {
-      AnglerMotor.moveVelocity(50);
-      anglerLock = false;
-    }
-    else if (partner.getDigital(ControllerDigital::L1) || anglerInButton.isPressed()) {
-      AnglerMotor.moveVelocity(-50);
-      anglerLock = false;
-    }
-    else if (anglerLock == false) {
+    if (anglerLock == false) {
       AnglerMotor.moveRelative(0, 50);
       anglerLock = true;
     }
+    std::cout << AnglerAngle.get() << std::endl;
+    // Angler motor
+    if (AnglerAngle.get() <= startingAnglerAngle) {
+      if (partner.getDigital(ControllerDigital::L1) || anglerInButton.isPressed()) {
+        AnglerMotor.moveVelocity(-50);
+        anglerLock = false;
+      }
+    }
+    else {
+      if (partner.getDigital(ControllerDigital::L2) || anglerOutButton.isPressed()) {
+        AnglerMotor.moveVelocity(50);
+        anglerLock = false;
+      }
+      else if (partner.getDigital(ControllerDigital::L1) || anglerInButton.isPressed()) {
+        AnglerMotor.moveVelocity(-50);
+        anglerLock = false;
+      }
+    }
+    
     
     // Lift Control
     if (abs(partner.getAnalog(ControllerAnalog::rightY)) > 0.3) {

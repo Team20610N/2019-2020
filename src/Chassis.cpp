@@ -1,21 +1,21 @@
 #include "main.h"
 
-ADIEncoder leftEncoder('C', 'D');
-ADIEncoder rightEncoder('A', 'B');
-ADIGyro Gyro('E',1);
+ADIEncoder leftEncoder('E', 'F');
+ADIEncoder rightEncoder('C', 'D');
+ADIGyro Gyro('B',1);
 
 int newHeading = 0;
 int JoisticHeading = 0;
 int chassisHeading;
 bool chassisBrake = false;
 
-Motor frontLeftMotor(1, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor frontLeftMotor(9, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor backLeftMotor(10, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 Motor frontRightMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor backLeftMotor(4, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor backRightMotor(3, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor backRightMotor(1, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
   .withMotors(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor)
-  .withSensors(leftEncoder, rightEncoder)
+  // .withSensors(leftEncoder, rightEncoder)
   .withDimensions(AbstractMotor::gearset::red, {{4_in, 10_in}, imev5RedTPR})
   .withMaxVelocity(60)
   .withLogger(
@@ -57,8 +57,8 @@ void ChassisOpcontrol(void* param) {
     //Updates display values.
 		updateLineVariable(1, chassisHeading);
 		updateLineVariable(2, JoisticHeading);
-		updateLineVariable(3, leftEncoder.controllerGet());
-		updateLineVariable(4, rightEncoder.controllerGet());
+		updateLineVariable(3, leftEncoder.get());
+		updateLineVariable(4, rightEncoder.get());
     
     // Graphs the drive motor temps
     lv_chart_set_next(chart, GreenLine, frontLeftMotor.getTemperature());
