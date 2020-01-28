@@ -3,10 +3,12 @@
 ADIEncoder leftEncoder('E', 'F');
 ADIEncoder rightEncoder('C', 'D');
 ADIGyro Gyro('B',1);
+pros::Imu IMU(8);
 
 int newHeading = 0;
 int JoisticHeading = 0;
 int chassisHeading;
+int headingError;
 bool chassisBrake = false;
 
 Motor frontLeftMotor(9, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
@@ -14,28 +16,22 @@ Motor backLeftMotor(10, false, AbstractMotor::gearset::red, AbstractMotor::encod
 Motor frontRightMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 Motor backRightMotor(1, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
-  .withMotors(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor)
-  // .withSensors(leftEncoder, rightEncoder)
-  .withDimensions(AbstractMotor::gearset::red, {{4_in, 10_in}, imev5RedTPR})
-  .withMaxVelocity(60)
+  .withMotors(frontLeftMotor, frontRightMotor, backRightMotor, backLeftMotor)
+  .withSensors(leftEncoder, rightEncoder)
+  .withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR})
+  .withMaxVelocity(100)
   .withLogger(
       std::make_shared<Logger>(
           TimeUtilFactory::createDefault().getTimer(), // It needs a Timer
           "/usd/Chassis_Diagnostics", // Output to the SDCard
-          Logger::LogLevel::info // Most verbose log level
+          Logger::LogLevel::debug // Most verbose log level
       )
   )
   .build();
 
 // Thread that controls the chassis 
 void ChassisOpcontrol(void* param) {
-  // // Write GyroHeading and ChassisVelocity to a file
-  // FILE *fp = fopen("/usd/Chassis_Diagnostics", "a");
-  // std::string diagnosticsStr = "Testing\n";
-  // fprintf(fp, "%s", diagnosticsStr.c_str()); 
-  // fclose(fp);
-    
-  // assigning the chassis to a H-drive model
+  // assigning the chassis to a X-drive model
   std::shared_ptr<okapi::XDriveModel> driveTrain = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
   driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);
   
@@ -51,7 +47,7 @@ void ChassisOpcontrol(void* param) {
   ControllerButton gyroReset(ControllerDigital::X);
 
   while (isAuton == false) {
-    chassisHeading = Gyro.get() / 10;
+    chassisHeading = IMU.get_heading() -headingError;
     newHeading = chassisHeading - JoisticHeading;
 
     //Updates display values.
@@ -93,17 +89,18 @@ void ChassisOpcontrol(void* param) {
     
     if (gyroReset.changedToPressed()) {
       Gyro.reset();
+      headingError = IMU.get_heading();
     }
     
     if (FieldCenteric == true) {
-      driveTrain->xArcade((turning / 100),
+      driveTrain->xArcade((straff / 100),
                           (forward / 100),
-                          (straff / 100), 0);
+                          (turning / 100), 0);
     }
     else {
-      driveTrain->xArcade(master.getAnalog(ControllerAnalog::rightX), 
+      driveTrain->xArcade(master.getAnalog(ControllerAnalog::leftX), 
                           master.getAnalog(ControllerAnalog::leftY), 
-                          master.getAnalog(ControllerAnalog::leftX), 0.3);
+                          master.getAnalog(ControllerAnalog::rightX), 0.3);
     }
     pros::delay(20);
   }

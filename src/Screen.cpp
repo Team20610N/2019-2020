@@ -276,9 +276,6 @@ void startAuton(void* param) {
         lv_label_set_text(label_cancel,   ("Auton Starting In " +
                                           to_string(5 - (((int)pros::millis() - (int)currentTime) / 1000)) +
                                           " Seconds.").c_str());
-      
-      // std::cout << currentTime << std::endl;
-      // std::cout << pros::millis() - 5000 << std::endl;
       if ((currentTime + 5000) < (pros::millis() + 5000) - 5000) {
         toggleAuton = false;
         waitAuton = false;

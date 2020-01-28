@@ -12,8 +12,9 @@ MotorGroup Roller({-16, 20});
 
 Potentiometer AnglerAngle ('A');
 
+int startingAnglerAngle = AnglerAngle.get();
+
 void opcontrol() {
-  int startingAnglerAngle = AnglerAngle.get();
   isAuton = false;
   chassis->setTurnsMirrored(false);
   // Seting the motor brake mode to hold

@@ -44,25 +44,40 @@ void redLarge() {
 } 
 
 void redSmall() {
-  LiftMotor.moveRelative(0, 200);
-  Roller.moveVelocity(120);
-  chassis->moveDistance(3.8_ft);
-  pros::delay(300);
-  Roller.moveVelocity(0);
-  chassis->moveDistance(-1.8_ft);
-  chassis->turnAngle(140_deg);
-  chassis->moveDistance(1.4_ft);
-  Roller.moveRelative(-1000, 40);
-  
-  AnglerMotor.moveRelative(-500, 50);
-  pros::delay(2000);
-  chassis->moveDistance(2_in);
-  chassis->moveDistance(-1_ft);
+  // frontLeftMotor.moveRelative(3000, 60);
+  // frontRightMotor.moveRelative(3000, 60);
+  // backRightMotor.moveRelative(3000, 60);
+  // backLeftMotor.moveRelative(3000, 60);
+  chassis->moveDistance(3_ft);
+  // pros::delay(3000);
+  // Roller.moveRelative(-2000, -200);
+  // pros::delay(1000);
+  // LiftMotor.moveRelative(300, 100);
+  // pros::delay(1000);
+  // Roller.moveVelocity(120);
+  // LiftMotor.moveRelative(-400, -100);
+  // pros::delay(500);
+  // LiftMotor.moveRelative(0, 200);
+  // chassis->moveDistance(3.4_ft);
+  // pros::delay(200);
+  // Roller.moveVelocity(0);
+  // chassis->moveDistance(-1.6_ft);
+  // chassis->turnAngle(320_deg);
+  // chassis->moveDistance(1.3_ft);
+  // Roller.moveRelative(-800, 40);
+
+  // AnglerMotor.moveRelative(-600, 50);
+  // pros::delay(1500);
+  // Roller.moveVelocity(-90);
+  // pros::delay(500);
+  // Roller.moveVelocity(0);
+  // chassis->moveDistance(2_in);
+  // chassis->moveDistance(-1_ft);
 }
 
 void blueLarge() {
   chassis->setTurnsMirrored(true);
-Roller.moveVelocity(80);
+  Roller.moveVelocity(80);
   chassis->moveDistance(2_ft);
   Roller.moveVelocity(0);
   chassis->turnAngle(-150_deg);
@@ -103,12 +118,9 @@ Roller.moveVelocity(80);
 }
 
 void blueSmall() {
-  chassis->moveDistance(1_ft);
-  chassis->setMaxVelocity(100);
-  chassis->moveDistance(1_ft);
-  // chassis->setTurnsMirrored(true);
-  // redSmall();
-  // chassis->setTurnsMirrored(false);
+  chassis->setTurnsMirrored(true);
+  redSmall();
+  chassis->setTurnsMirrored(false);
 }
 
 // Part of the auton selector code
