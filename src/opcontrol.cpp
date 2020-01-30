@@ -10,9 +10,8 @@ Motor LeftRollerMotor(20, false, AbstractMotor::gearset::green, AbstractMotor::e
 Motor AnglerMotor(12, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 MotorGroup Roller({-16, 20});
 
-Potentiometer AnglerAngle ('A');
-
-int startingAnglerAngle = AnglerAngle.get();
+Potentiometer AnglerAngle ('B');
+int startingAnglerAngle;
 
 void opcontrol() {
   isAuton = false;
@@ -41,6 +40,8 @@ void opcontrol() {
   // Start the thread for the base
   pros::Task ChassisOpcontrol_TR(ChassisOpcontrol, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "My Task");
   while (true) {
+    // std::cout << -(startingAnglerAngle - AnglerAngle.get()) << std::endl;
+    updateLineVariable(2, AnglerAngle.get());
     lv_chart_set_next(chart, NavyLine, LeftRollerMotor.getTemperature());
     lv_chart_set_next(chart, BlueLine, RightRollerMotor.getTemperature());
     lv_chart_set_next(chart, SilverLine, AnglerMotor.getTemperature());
@@ -94,7 +95,6 @@ void opcontrol() {
       AnglerMotor.moveRelative(0, 50);
       anglerLock = true;
     }
-    std::cout << AnglerAngle.get() << std::endl;
     // Angler motor
     if (AnglerAngle.get() <= startingAnglerAngle) {
       if (partner.getDigital(ControllerDigital::L1) || anglerInButton.isPressed()) {
@@ -117,7 +117,7 @@ void opcontrol() {
     // Lift Control
     if (abs(partner.getAnalog(ControllerAnalog::rightY)) > 0.3) {
       LiftMotor.moveVelocity(partner.getAnalog(ControllerAnalog::rightY)*200);
-      AnglerMotor.moveVelocity(-LiftMotor.getActualVelocity() / 1.8);
+      AnglerMotor.moveVelocity(-LiftMotor.getActualVelocity() / 1.6);
       liftLock = false;
       anglerLock = false;
     }
@@ -128,6 +128,16 @@ void opcontrol() {
     else if (liftLock == false) {
       LiftMotor.moveRelative(0, 100);
       liftLock = true;
+    }
+    
+    if (partner.getDigital(ControllerDigital::up)) {
+      Roller.moveRelative(-2000, -200);
+      pros::delay(1000);
+      LiftMotor.moveRelative(300, 100);
+      pros::delay(1000);
+      Roller.moveVelocity(190);
+      LiftMotor.moveRelative(-400, -100);
+      pros::delay(500);
     }
     
     pros::delay(20);

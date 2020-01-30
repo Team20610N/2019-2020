@@ -14,23 +14,25 @@ bool chassisBrake = false;
 Motor frontLeftMotor(9, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 Motor backLeftMotor(10, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 Motor frontRightMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor backRightMotor(1, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor backRightMotor(3, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
-  .withMotors(frontLeftMotor, frontRightMotor, backRightMotor, backLeftMotor)
+	.withMotors(frontLeftMotor, frontRightMotor, backRightMotor, backLeftMotor)
+  .withMaxVelocity(150)
   .withSensors(leftEncoder, rightEncoder)
-  .withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR})
-  .withMaxVelocity(100)
-  .withLogger(
-      std::make_shared<Logger>(
-          TimeUtilFactory::createDefault().getTimer(), // It needs a Timer
-          "/usd/Chassis_Diagnostics", // Output to the SDCard
-          Logger::LogLevel::debug // Most verbose log level
-      )
-  )
-  .build();
+    .withGains(
+        // power, small tooner, keep from over shooting.
+        {0.0018, 0, 0}, // Distance controller gains
+        {0.003, 0, 0}, // Turn controller gains
+        {0.001, 0, 0.00006}  // Angle controller gains (helps drive straight)
+    )
+    // green gearset, 4 inch wheel diameter, 11.5 inch wheelbase
+    .withDimensions(AbstractMotor::gearset::green, {{4_in, 21_in}, imev5GreenTPR})
+    .withOdometry() // use the same scales as the chassis (above)
+    .buildOdometry(); // build an odometry chassis
 
 // Thread that controls the chassis 
 void ChassisOpcontrol(void* param) {
+  chassis->moveDistance(0_in);
   // assigning the chassis to a X-drive model
   std::shared_ptr<okapi::XDriveModel> driveTrain = std::dynamic_pointer_cast<XDriveModel>(chassis->getModel());
   driveTrain->setBrakeMode(AbstractMotor::brakeMode::hold);
@@ -52,7 +54,6 @@ void ChassisOpcontrol(void* param) {
 
     //Updates display values.
 		updateLineVariable(1, chassisHeading);
-		updateLineVariable(2, JoisticHeading);
 		updateLineVariable(3, leftEncoder.get());
 		updateLineVariable(4, rightEncoder.get());
     
@@ -88,7 +89,7 @@ void ChassisOpcontrol(void* param) {
     }
     
     if (gyroReset.changedToPressed()) {
-      Gyro.reset();
+      // Gyro.reset();
       headingError = IMU.get_heading();
     }
     
