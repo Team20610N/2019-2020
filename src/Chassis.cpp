@@ -23,7 +23,7 @@ std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
         // power, small tooner, keep from over shooting.
         {0.0018, 0, 0}, // Distance controller gains
         {0.003, 0, 0}, // Turn controller gains
-        {0.001, 0, 0.00006}  // Angle controller gains (helps drive straight)
+        {0.002, 0, 0.00006}  // Angle controller gains (helps drive straight)
     )
     // green gearset, 4 inch wheel diameter, 11.5 inch wheelbase
     .withDimensions(AbstractMotor::gearset::green, {{4_in, 21_in}, imev5GreenTPR})

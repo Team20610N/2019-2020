@@ -19,8 +19,8 @@ void redSmall() {
   pros::delay(200);
   Roller.moveVelocity(0);
   chassis->moveDistance(-0.8_ft);
-  chassis->turnAngle(61_deg);
-  chassis->moveDistance(0.43_ft);
+  chassis->turnAngle(62_deg);
+  chassis->moveDistance(0.435_ft);
   
   
   Roller.moveRelative(-700, -40);
@@ -38,20 +38,6 @@ void redSmall() {
   Roller.moveVelocity(0);
 }
 
-
-  // Roller.moveRelative(-700, -40);
-  // pros::delay(500);
-
-  // AnglerMotor.moveRelative(-700, 50);
-  // pros::delay(1500);
-  // Roller.moveVelocity(-200);
-  // // Roller.moveRelative(-2000, -200);
-  // pros::delay(800);
-  // chassis->moveDistance(3_in);
-  // chassis->setMaxVelocity(50);
-  // chassis->moveDistance(-1_ft);
-  // Roller.moveVelocity(0);
-
 void blueLarge() {
   chassis->setMaxVelocity(150);
   Roller.moveRelative(-2000, -200);
@@ -61,14 +47,16 @@ void blueLarge() {
   pros::delay(500);
   LiftMotor.moveRelative(-300, -100);
   pros::delay(1000);
+  
   Roller.moveVelocity(100);
   chassis->moveDistance(5_in);
-  chassis->turnAngle(52_deg);
+  chassis->turnAngle(53_deg);
   Roller.moveVelocity(-200);
-  pros::delay(200);
+  pros::delay(500);
+  
   chassis->moveDistance(-2_in);
   Roller.moveVelocity(70);
-  chassis->turnAngle(65_deg);
+  chassis->turnAngle(63_deg);
   chassis->setMaxVelocity(150);
   chassis->moveDistance(6_in);
   Roller.moveVelocity(0);
@@ -77,7 +65,7 @@ void blueLarge() {
   
   pros::delay(500);
   chassis->setMaxVelocity(100);
-  chassis->moveDistance(6_in);
+  chassis->moveDistance(6.25_in);
   // chassis->turnAngle(-10_deg);
   Roller.moveVelocity(-80);
   pros::delay(1000);
