@@ -11,10 +11,10 @@ int chassisHeading;
 int headingError;
 bool chassisBrake = false;
 
-Motor frontLeftMotor(9, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor backLeftMotor(10, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor frontRightMotor(2, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor backRightMotor(3, true, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
+Motor frontLeftMotor(9, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor backLeftMotor(10, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor frontRightMotor(2, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor backRightMotor(3, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
 	.withMotors(frontLeftMotor, frontRightMotor, backRightMotor, backLeftMotor)
   .withMaxVelocity(150)
