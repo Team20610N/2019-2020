@@ -15,8 +15,7 @@ lv_obj_t *page;
 lv_obj_t *label_cancel;
 lv_obj_t * AutonSelectorButtons;
 lv_obj_t * chart;
-
-lv_chart_series_t * redLine;
+lv_obj_t *legand;
 
 lv_chart_series_t * NavyLine;
 lv_chart_series_t * BlueLine;
@@ -160,11 +159,7 @@ void runScreen() {
   lv_page_set_sb_mode(tab3, LV_SB_MODE_OFF);
   
     chart = lv_chart_create(tab3, NULL);
-    // A red line to represent the threshold for motor throtteling
-    redLine = lv_chart_add_series(chart, LV_COLOR_RED);
-    for( int a = 0; a < lv_chart_get_point_cnt(chart); a = a + 1 ) {
-      lv_chart_set_next(chart, redLine, 55);
-    }
+    lv_chart_set_type(chart, LV_CHART_TYPE_COLUMN);
     
     NavyLine = lv_chart_add_series(chart, LV_COLOR_NAVY);
     BlueLine= lv_chart_add_series(chart, LV_COLOR_BLUE);
@@ -178,8 +173,19 @@ void runScreen() {
     PurpleLine= lv_chart_add_series(chart, LV_COLOR_PURPLE);
     OrangeLine= lv_chart_add_series(chart, LV_COLOR_ORANGE);
      
-    lv_obj_set_size(chart, 460, 155);
-    lv_chart_set_range(chart, 0, 70);
+    lv_obj_set_size(chart, 280, 155);
+    lv_chart_set_div_line_count(chart, 0, 0);
+    lv_chart_set_point_count(chart, 1);
+    lv_chart_set_range(chart, 0, 50);
+    
+    legand = lv_label_create(tab3, NULL);
+    lv_obj_align(legand, NULL, LV_ALIGN_IN_TOP_MID, 80 , 30);
+    lv_label_set_text(legand, "Purple: Angler Motor\n"
+                              "Orange: Lift Motor\n"
+                              "Silver: Left Roller\n"
+                              "White: Right Roller\n"
+                              "Blue: Front Drive\n"
+                              "Green: Back Drive");
 
   //Creates box that conatins displayed variables.
   lv_obj_t * box1;
@@ -256,7 +262,7 @@ void updateLineVariable(int line, double value) {
       break;
   }
   lv_label_set_text(txt, (  "Robot Heading: " + to_string(robotHeading) + '\n' +
-                            "Middle Encoder: " + to_string(middleEncoderValue) + '\n' +
+                            "Lift Position: " + to_string(middleEncoderValue) + '\n' +
                             "Left Encoder: " + to_string(leftMotorValue) + '\n' +
                             "Right Encoder: " + to_string(rightMotorValue) + '\n' +
                             "Test switches: " + to_string(test1) + " " + to_string(test2) +

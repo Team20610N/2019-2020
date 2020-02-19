@@ -9,5 +9,6 @@ extern Motor backLeftMotor;
 extern Motor frontRightMotor;
 extern Motor backRightMotor;
 extern std::shared_ptr<ChassisController> chassis;
+extern std::shared_ptr<okapi::XDriveModel> driveTrain;
 
 extern void ChassisOpcontrol(void* param);

@@ -5,8 +5,6 @@ extern lv_obj_t * chart;
 
 extern lv_obj_t * tabview;
 
-extern lv_chart_series_t * redLine;
-
 extern lv_chart_series_t * NavyLine;
 extern lv_chart_series_t * BlueLine;
 

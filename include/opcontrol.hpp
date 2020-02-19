@@ -10,5 +10,5 @@ extern okapi::Motor AnglerMotor;
 extern okapi::MotorGroup Roller;
 
 extern int startingAnglerAngle;
-extern Potentiometer AnglerAngle;
+extern ADIEncoder AnglerAngle;
 extern int startingAnglerAngle;
