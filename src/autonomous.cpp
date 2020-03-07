@@ -9,8 +9,26 @@ void SetStack() {
     AnglerMotor.moveVelocity(80);
   }
   AnglerMotor.moveVelocity(0);
-  pros::delay(500);
-  chassis->moveDistance(-4_in);
+  pros::delay(200);
+  chassis->moveDistance(-8_in);
+  Roller.moveVoltage(0);
+}
+
+void SetStackSafe() {
+  Roller.moveVelocity(-60);
+  pros::delay(550);
+  Roller.moveVelocity(0);
+  while (AnglerAngle.get() <= 85) {
+    AnglerMotor.moveVelocity(50);
+    if (AnglerAngle.get() >= 35){
+      Roller.moveVelocity(-AnglerMotor.getActualVelocity() / 1.9);
+    }
+  }
+  Roller.moveVelocity(-130);
+  AnglerMotor.moveVelocity(0);
+  pros::delay(200);
+  chassis->setMaxVelocity(100);
+  chassis->moveDistance(-8_in);
   Roller.moveVoltage(0);
 }
 
@@ -26,27 +44,31 @@ void Deploy() {
 }
 
 void blueLarge() {
-  chassis->moveDistance(-4_in);
-  chassis->moveDistance(4_in);
+  chassis->moveDistance(-10_in);
+  chassis->moveDistance(10_in);
   Deploy();
 }
 
 void blueSmall() {
   Deploy();
-  driveTrain->right(-80);
-  driveTrain->left(-50);
-  pros::delay(650);
-  LiftMotor.moveVelocity(0);
-  
+  driveTrain->xArcade(50, 0, 0, 0.3);
+  pros::delay(500);
+  driveTrain->xArcade(0, -30, 0, 0.3);
+  pros::delay(400);
+  driveTrain->xArcade(0, 0, 0, 0.3);
   Roller.moveVelocity(200);
-  chassis->setMaxVelocity(90);
-  chassis->moveDistance(1.3_ft);
+  chassis->setMaxVelocity(100);
+  chassis->moveDistance(3.6_ft);
+  chassis->turnAngle(25_deg);
+  chassis->moveDistance(1_ft);
+  chassis->setMaxVelocity(150);
+  chassis->moveDistanceAsync(-2_ft);
+  pros::delay(1200);
+  Roller.moveVelocity(0);
+  chassis->turnAngle(183_deg);
+  Roller.moveVelocity(200);
   chassis->setMaxVelocity(130);
-  chassis->turnAngle(15_deg);
-  chassis->moveDistance(5_in);
-  chassis->moveDistance(-11_in);
-  chassis->turnAngle(-98_deg);
-  chassis->moveDistance(7.5_in);
+  chassis->moveDistance(2.1_ft);
   Roller.moveVelocity(0);
 
   SetStack();
@@ -54,21 +76,24 @@ void blueSmall() {
 
 void redSmall() {
   chassis->setTurnsMirrored(true);
-  Deploy();
-  driveTrain->right(-80);
-  driveTrain->left(-50);
-  pros::delay(650);
-  LiftMotor.moveVelocity(0);
-  
+    Deploy();
+  driveTrain->xArcade(-50, 0, 0, 0.3);
+  pros::delay(500);
+  driveTrain->xArcade(0, -30, 0, 0.3);
+  pros::delay(300);
+  driveTrain->xArcade(0, 0, 0, 0.3);
   Roller.moveVelocity(200);
-  chassis->setMaxVelocity(90);
-  chassis->moveDistance(1.3_ft);
-  chassis->setMaxVelocity(130);
-  chassis->turnAngle(11_deg);
-  chassis->moveDistance(5_in);
-  chassis->moveDistance(-11.5_in);
-  chassis->turnAngle(-104_deg);
-  chassis->moveDistance(7.2_in);
+  chassis->setMaxVelocity(100);
+  chassis->moveDistance(3.6_ft);
+  chassis->turnAngle(25_deg);
+  chassis->moveDistance(1_ft);
+  chassis->setMaxVelocity(150);
+  chassis->moveDistanceAsync(-2.5_ft);
+  pros::delay(1200);
+  Roller.moveVelocity(0);
+  chassis->turnAngle(176_deg);
+  Roller.moveVelocity(200);
+  chassis->moveDistance(1.8_ft);
   Roller.moveVelocity(0);
 
   SetStack();
@@ -83,46 +108,148 @@ void redLarge() {
 
 void Skills () {
   Deploy();
-  driveTrain->right(-80);
-  driveTrain->left(-50);
-  pros::delay(650);
-  LiftMotor.moveVelocity(0);
-  
+  chassis->setMaxVelocity(100);
   Roller.moveVelocity(200);
-  chassis->setMaxVelocity(90);
-  chassis->moveDistance(1.3_ft);
-  chassis->setMaxVelocity(130);
-  chassis->turnAngle(15_deg);
-  chassis->moveDistance(5_in);
-  chassis->moveDistance(-11_in);
-  chassis->turnAngle(-98_deg);
-  chassis->moveDistance(7.5_in);
-  Roller.moveVelocity(0);
-
-  SetStack();
-  
-  chassis->moveDistanceAsync(-1_ft);
-  while (AnglerAngle.get() <= 5) {
-    AnglerMotor.moveVelocity(-80);
-  }
-  AnglerMotor.moveVelocity(0);
-  pros::delay(200);
-  chassis->turnAngle(35_deg);
-  Roller.moveVelocity(100);
-  chassis->moveDistance(1.5_ft);
+  driveTrain->forward(-50);
   pros::delay(500);
+  chassis->moveDistance(4_ft);
+  chassis->turnAngle(26_deg);
+  chassis->moveDistance(-4.2_ft);
   Roller.moveVelocity(0);
+  chassis->turnAngle(-32_deg);
+  
+  // Get row of 4 cubes
+  Roller.moveVelocity(200);
+  chassis->setMaxVelocity(70);
+  chassis->moveDistance(3.5_ft);
+  pros::delay(400);
+  Roller.moveVelocity(-50);
+  pros::delay(400);
+  Roller.moveVelocity(100);
+  chassis->moveDistance(-2.2_ft);
+  Roller.moveVelocity(0);
+  
+  // turn and set stack
+  chassis->setMaxVelocity(100);
+  chassis->turnAngle(-124_deg);
+  chassis->moveDistance(1.7_ft);
+  SetStackSafe();
+  
+  // drive to first tower
+  chassis->moveDistance(-1_ft);
+  chassis->turnAngle(-137_deg);
+  chassis->setMaxVelocity(80);
+  chassis->moveDistanceAsync(3_ft);
+  while (AnglerAngle.get() >= 5) {
+    AnglerMotor.moveVelocity(-200);
+  }
+  AnglerMotor.moveVoltage(0);
+  Roller.moveVelocity(200);
+  pros::delay(600);
+  chassis->setMaxVelocity(100);
   chassis->moveDistance(-6_in);
-  LiftMotor.moveRelative(3000, 100);
-  pros::delay(2000);
-  Roller.moveRelative(-1000, 100);
-  chassis->moveDistance(3_in);
-  chassis->moveDistance(6_in);
-  LiftMotor.setBrakeMode(AbstractMotor::brakeMode::coast);
+  
+  // Put cube in first tower
+  Roller.moveRelative(-600, -100);
+  pros::delay(300);
+  LiftMotor.moveRelative(600, 100);
+  while (AnglerAngle.get() <= 35) {
+    AnglerMotor.moveVelocity(80);
+  }
+  AnglerMotor.moveVoltage(0);
+  pros::delay(600);
+  chassis->moveDistance(10_in);
+  Roller.moveVelocity(-70);
+  pros::delay(500);
+  chassis->moveDistance(-4_in);
   LiftMotor.moveVoltage(0);
   
+  // turn get preload cube drive to second tower
+  chassis->turnAngle(80_deg);
+  Roller.moveVelocity(200);
+  chassis->moveDistance(9_in);
+  chassis->moveDistance(-1.8_ft);
+  Roller.moveVelocity(0);
+  chassis->turnAngle(109_deg);
+  chassis->moveDistance(2.3_ft);
+  
+  // setup for tower
+  Roller.moveRelative(-600, -100);
+  pros::delay(300);
+  LiftMotor.moveRelative(450, 100);
+  while (AnglerAngle.get() <= 35) {
+    AnglerMotor.moveVelocity(80);
+  }
+  AnglerMotor.moveVoltage(0);
+  pros::delay(600);
+  chassis->moveDistance(10_in);
+  
+  // place cube into second tower
+  Roller.moveVelocity(-70);
+  pros::delay(600);
+  chassis->moveDistance(-10_in);
+  LiftMotor.moveVoltage(0);
+  Roller.moveVoltage(0);
+  
+  // get last cube for third tower
+  chassis->moveDistance(-1_ft);
+  chassis->turnAngle(93_deg);
+  Roller.moveVelocity(200);
+  chassis->moveDistance(1.8_ft);
+  
+  // set up for tower
+  chassis->moveDistance(-10_in);
+  Roller.moveRelative(-600, -100);
+  pros::delay(300);
+  LiftMotor.moveRelative(450, 100);
+  while (AnglerAngle.get() <= 35) {
+    AnglerMotor.moveVelocity(80);
+  }
+  AnglerMotor.moveVoltage(0);
+  pros::delay(600);
+  chassis->moveDistance(10_in);
+  
+  // put last cube into tower
+  Roller.moveVelocity(-70);
+  pros::delay(600);
+  chassis->moveDistance(-10_in);
+  LiftMotor.moveVoltage(0);
+  Roller.moveVoltage(0);
 }
 
+void redSafe() {
+  chassis->setTurnsMirrored(true);
+  Deploy();
+  driveTrain->xArcade(-50, 0, 0, 0.3);
+  pros::delay(500);
+  driveTrain->xArcade(0, -30, 0, 0.3);
+  pros::delay(300);
+  driveTrain->xArcade(0, 0, 0, 0.3);
+  Roller.moveVelocity(200);
+  chassis->setMaxVelocity(90);
+  chassis->moveDistance(3.3_ft);
+  chassis->moveDistance(-1.8_ft);
+  chassis->turnAngle(-135_deg);
+  chassis->moveDistance(1.4_ft);
+  SetStack();
+  chassis->setTurnsMirrored(false);
+}
+
+void blueSafe() {
+  Deploy();
+  driveTrain->xArcade(50, 0, 0, 0.3);
+  pros::delay(500);
+  driveTrain->xArcade(0, -30, 0, 0.3);
+  pros::delay(300);
+  driveTrain->xArcade(0, 0, 0, 0.3);
+  Roller.moveVelocity(200);
+  chassis->setMaxVelocity(90);
+  chassis->moveDistance(3.3_ft);
+  chassis->moveDistance(-1.8_ft);
+  chassis->turnAngle(-135_deg);
+  chassis->moveDistance(1.4_ft);
+  SetStack();
+}
 
 // Part of the auton selector code
 void (*scripts[])() = {&redLarge, &redSmall, &blueLarge, &blueSmall};
@@ -132,13 +259,19 @@ void autonomous() {
   lv_tabview_set_tab_act(tabview, 2, true);
   
   switch (selectedAuton) {
-    case 1: blueLarge();
+    case 1: blueSmall();
       break;
-    case 2: blueSmall();
+    case 2: blueSafe();
       break;
-    case 3: redLarge();
+    case 3: blueLarge();
       break;
-    case 4: redSmall();
+    case 4: Skills();
+      break;
+    case 5: redLarge();
+      break;
+    case 6: redSafe();
+      break;
+    case 7: redSmall();
       break;
   }
   isAuton = false;

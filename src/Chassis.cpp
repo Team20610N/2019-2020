@@ -15,7 +15,7 @@ Motor frontLeftMotor(9, false, AbstractMotor::gearset::green, AbstractMotor::enc
 Motor backLeftMotor(10, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor frontRightMotor(2, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor backRightMotor(3, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
-std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
+std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
 	.withMotors(frontLeftMotor, frontRightMotor, backRightMotor, backLeftMotor)
   .withMaxVelocity(150)
   .withSensors(leftEncoder, rightEncoder)
@@ -27,7 +27,7 @@ std::shared_ptr<ChassisController> chassis = ChassisControllerBuilder()
     )
     // green gearset, 4 inch wheel diameter, 11.5 inch wheelbase
     //                                                 was 21_in
-    .withDimensions(AbstractMotor::gearset::green, {{4_in, 15_in}, imev5GreenTPR})
+    .withDimensions(AbstractMotor::gearset::green, {{3.5_in, 23.5_in}, imev5BlueTPR})
     .withOdometry() // use the same scales as the chassis (above)
     .buildOdometry(); // build an odometry chassis
 
@@ -48,7 +48,9 @@ void ChassisOpcontrol(void* param) {
   bool FieldCenteric = true;
   
   ControllerButton fieldCentericToggle(ControllerDigital::X);
-  ControllerButton gyroReset(ControllerDigital::A);
+  ControllerButton gyroReset(ControllerDigital::Y);
+  // ControllerButton test(ControllerDigital::B);
+  // ControllerButton test(ControllerDigital::down);
 
   while (isAuton == false) {
     chassisHeading = IMU.get_heading() -headingError;
@@ -94,7 +96,7 @@ void ChassisOpcontrol(void* param) {
       }
     }
     
-    if (gyroReset.changedToPressed()) {
+    if (gyroReset.isPressed()) {
       // Gyro.reset();
       headingError = IMU.get_heading();
     }

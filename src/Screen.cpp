@@ -69,13 +69,19 @@ static lv_res_t run_auton_btn_press(lv_obj_t * btn) {
   /*Displays auton that is about to run*/
   lv_obj_t * label_auton = lv_label_create(page, NULL);
   switch (selectedAuton) {
-    case 1: lv_label_set_text(label_auton, "BlueLarge");
+    case 1: lv_label_set_text(label_auton, "BlueSmall");
       break;
-    case 2: lv_label_set_text(label_auton, "BlueSmall");
+    case 2: lv_label_set_text(label_auton, "BlueSafe");
       break;
-    case 3: lv_label_set_text(label_auton, "RedLarge");
+    case 3: lv_label_set_text(label_auton, "BlueLarge");
       break;
-    case 4: lv_label_set_text(label_auton, "RedSmall");
+    case 4: lv_label_set_text(label_auton, "Skills");
+      break;
+    case 5: lv_label_set_text(label_auton, "RedLarge");
+      break;
+    case 6: lv_label_set_text(label_auton, "RedSafe");
+      break;
+    case 7: lv_label_set_text(label_auton, "RedSmall");
       break;
     }
   lv_obj_align(label_auton, btnCancel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
@@ -92,22 +98,30 @@ static lv_res_t run_auton_btn_press(lv_obj_t * btn) {
   return LV_RES_OK; /*Return OK if the button is not deleted*/
 }
 
-
 /*Called when a button from the button matrix is pressed*/
 static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt) {
   //Changes the selected auton to the corresponding pressed button. Displays on controller.
-  if (strcmp(txt, "BlueLarge") == 0) {
+  if (strcmp(txt, "BSm") == 0) {
     selectedAuton = 1;
   }
-  else if (strcmp(txt, "BlueSmall") == 0) {
+  else if (strcmp(txt, "BSaf") == 0) {
     selectedAuton = 2;
   }
-  else if (strcmp(txt, "RedLarge") == 0) {
+  else if (strcmp(txt, "BL") == 0) {
     selectedAuton = 3;
   }
-  else if (strcmp(txt, "RedSmall") == 0) {
-      selectedAuton = 4;
-    }
+  else if (strcmp(txt, "Skills") == 0) {
+    selectedAuton = 4;
+  }
+  else if (strcmp(txt, "RL") == 0) {
+    selectedAuton = 5;
+  }
+  else if (strcmp(txt, "RSaf") == 0) {
+    selectedAuton = 6;
+  }
+  else if (strcmp(txt, "RSm") == 0) {
+    selectedAuton = 7;
+  }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
 
@@ -139,7 +153,7 @@ static lv_res_t sw3_action(lv_obj_t *sw) {
 lv_obj_t * txt;
 
 //Create a button descriptor string array
-static const char * btnm_map[] = {"BlueLarge", "BlueSmall", "RedLarge", "RedSmall", ""};
+static const char * btnm_map[] = {"BSm", "BSaf", "BL", "Skills", "RL", "RSaf", "RSm", ""};
 
 void runScreen() {
   pros::Task startAuton_TR(startAuton, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "My Task");

@@ -5,10 +5,10 @@ Controller master (ControllerId::master);
 Controller partner (ControllerId::partner);
 
 Motor LiftMotor(11, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-Motor RightRollerMotor(17, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
+Motor RightRollerMotor(18, true, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor LeftRollerMotor(20, false, AbstractMotor::gearset::green, AbstractMotor::encoderUnits::degrees);
 Motor AnglerMotor(12, false, AbstractMotor::gearset::red, AbstractMotor::encoderUnits::degrees);
-MotorGroup Roller({-17, 20});
+MotorGroup Roller({-18, 20});
 
 ADIEncoder AnglerAngle('A', 'B', true);
 int startingAnglerAngle;
@@ -23,11 +23,10 @@ void opcontrol() {
   LeftRollerMotor.setBrakeMode(AbstractMotor::brakeMode::hold);
   
   // Creating controller buttons
-  ControllerButton leftAutonButton(ControllerDigital::down);
-  ControllerButton rightAutonButton(ControllerDigital::right);
   ControllerButton leftScreenButton(ControllerDigital::up);
   ControllerButton rightScreenButton(ControllerDigital::left);
   
+  ControllerButton TowerIntakeButton(ControllerDigital::right);
   ControllerButton intakeInButton(ControllerDigital::L1); 
   ControllerButton intakeOutButton(ControllerDigital::L2);
   ControllerButton anglerDownButton(ControllerDigital::R1);
@@ -47,11 +46,7 @@ void opcontrol() {
     lv_chart_set_next(chart, PurpleLine, AnglerMotor.getTemperature());
     lv_chart_set_next(chart, OrangeLine, LiftMotor.getTemperature());
     
-    // changes the active auton using the controller
-    if (leftAutonButton.changedToPressed()) {selectedAuton = (selectedAuton - 1 + 4) % 4;SetAutonButton(selectedAuton);}
-    else if (rightAutonButton.changedToPressed()) {selectedAuton = (selectedAuton + 1 + 4) % 4;SetAutonButton(selectedAuton);}
-    
-    // Sycles the active screen tab using the controller
+    // Cycles the active screen tab using the controller
     if (leftScreenButton.changedToPressed()) {lv_tabview_set_tab_act(tabview, (lv_tabview_get_tab_act(tabview) + 1 + 3) % 3, false);}
     else if (rightScreenButton.changedToPressed()) {lv_tabview_set_tab_act(tabview, (lv_tabview_get_tab_act(tabview) - 1 + 3) % 3, false);}
 
@@ -85,7 +80,12 @@ void opcontrol() {
       LeftRollerMotor.moveVelocity(200);
       rollersLock = false;
     }
-    else if (intakeOutButton.isPressed() || partner.getDigital(ControllerDigital::R2)) {
+    else if (intakeOutButton.isPressed()) {
+      RightRollerMotor.moveVelocity(-200);
+      LeftRollerMotor.moveVelocity(-200);
+      rollersLock = false;
+    }
+    else if (TowerIntakeButton.isPressed() || partner.getDigital(ControllerDigital::R2)) {
       RightRollerMotor.moveVelocity(-100);
       LeftRollerMotor.moveVelocity(-100);
       rollersLock = false;
@@ -95,6 +95,10 @@ void opcontrol() {
       RightRollerMotor.moveRelative(0, 200);
       LeftRollerMotor.moveRelative(0, 200);
       rollersLock = true;
+    }
+    
+    if (partner.getDigital(ControllerDigital::left)) {
+      startingAnglerAngle -= startingAnglerAngle;
     }
     
     
@@ -118,7 +122,7 @@ void opcontrol() {
     
     // If the tray is back, stop the motor
     if (AnglerAngle.get() <= (startingAnglerAngle+10)) {
-      if (partner.getDigital(ControllerDigital::L1) || anglerDownButton.isPressed()) {
+      if (partner.getDigital(ControllerDigital::L1) || master.getDigital(ControllerDigital::R1)) {
         AnglerMotor.moveVelocity(50);
         anglerLock = false;
       }
@@ -127,20 +131,20 @@ void opcontrol() {
       }
     }
     // Prevent over extension
-    else if (AnglerAngle.get() >= 100) {
-      if (partner.getDigital(ControllerDigital::L2) || anglerUpButton.isPressed()) {
+    else if (AnglerAngle.get() >= 110) {
+      if (partner.getDigital(ControllerDigital::L2) || master.getDigital(ControllerDigital::R2)) {
         AnglerMotor.moveVelocity(-50);
         anglerLock = false;
       }
     }
     else {
-      if (partner.getDigital(ControllerDigital::L2) || anglerUpButton.isPressed()) {
+      if (partner.getDigital(ControllerDigital::L2) || master.getDigital(ControllerDigital::R2)) {
         AnglerMotor.moveVelocity(-50);
         anglerLock = false;
       }
-      else if (partner.getDigital(ControllerDigital::L1) || anglerDownButton.isPressed()) {
+      else if (master.getDigital(ControllerDigital::R1) || partner.getDigital(ControllerDigital::L1)) {
         AnglerMotor.moveVelocity(50);
-        Roller.moveVelocity(-AnglerMotor.getActualVelocity() / 1.6);
+        Roller.moveVelocity(-AnglerMotor.getActualVelocity() / 1.9);
         rollersLock = false;
         anglerLock = false;
       }
@@ -183,19 +187,12 @@ void opcontrol() {
     
     // Tray Deploy for driver
     if (partner.getDigital(ControllerDigital::up)) {
-      LiftMotor.moveVelocity(200);
-      pros::delay(500);
-      Roller.moveVelocity(-100);
-      pros::delay(900);
-      LiftMotor.moveVoltage(0);
-      LiftMotor.moveVoltage(0);
-      Roller.moveVoltage(0);
-      pros::delay(1000);
+      Deploy();
     }
     
     
     // Stack release
-    if (partner.getDigital(ControllerDigital::down)) {
+    if (partner.getDigital(ControllerDigital::down) || master.getDigital(ControllerDigital::X)) {
       ChassisOpcontrol_TR.suspend();
       Roller.moveVelocity(-125);
       pros::delay(150);
