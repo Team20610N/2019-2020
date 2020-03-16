@@ -1,6 +1,6 @@
 #include "main.h"
 
-// master controller declaration
+// controller declaration
 Controller master (ControllerId::master);
 Controller partner (ControllerId::partner);
 
@@ -105,9 +105,9 @@ void opcontrol() {
     /*
       Angler Controls
       Master:
-      
+        Digital R1 R2
       Partner:
-      
+        Digital L1 L2
     */
     // Angler Lock
     if (anglerLock == false) {
@@ -174,6 +174,7 @@ void opcontrol() {
     else if (LiftMotor.getPosition() <= 100) {
       LiftMotor.moveVoltage(0);
     }
+    
     // Lift Lock
     else if (liftLock == false) {
       if (LiftMotor.getPosition() >= 100) { 

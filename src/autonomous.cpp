@@ -1,6 +1,6 @@
 #include "main.h"
 
-// Default values
+// When set to true driver code stops
 bool isAuton = false;
 
 void SetStack() {
@@ -113,10 +113,10 @@ void Skills () {
   driveTrain->forward(-50);
   pros::delay(500);
   chassis->moveDistance(4_ft);
-  chassis->turnAngle(26_deg);
+  chassis->turnAngle(28_deg);
   chassis->moveDistance(-4.2_ft);
   Roller.moveVelocity(0);
-  chassis->turnAngle(-32_deg);
+  chassis->turnAngle(-34_deg);
   
   // Get row of 4 cubes
   Roller.moveVelocity(200);
@@ -131,26 +131,29 @@ void Skills () {
   
   // turn and set stack
   chassis->setMaxVelocity(100);
-  chassis->turnAngle(-124_deg);
-  chassis->moveDistance(1.7_ft);
+  chassis->turnAngle(-127_deg);
+  chassis->moveDistance(1.6_ft);
   SetStackSafe();
   
   // drive to first tower
   chassis->moveDistance(-1_ft);
-  chassis->turnAngle(-137_deg);
+  chassis->turnAngle(-134_deg);
   chassis->setMaxVelocity(80);
-  chassis->moveDistanceAsync(3_ft);
+  chassis->moveDistanceAsync(3.2_ft);
   while (AnglerAngle.get() >= 5) {
     AnglerMotor.moveVelocity(-200);
   }
   AnglerMotor.moveVoltage(0);
-  Roller.moveVelocity(200);
-  pros::delay(600);
+  Roller.moveVelocity(170);
+  pros::delay(700);
+  Roller.moveVelocity(0);
+  chassis->moveDistance(0_ft);
+  // pros::delay(100);
   chassis->setMaxVelocity(100);
   chassis->moveDistance(-6_in);
   
   // Put cube in first tower
-  Roller.moveRelative(-600, -100);
+  // Roller.moveRelative(-900, -200);
   pros::delay(300);
   LiftMotor.moveRelative(600, 100);
   while (AnglerAngle.get() <= 35) {
@@ -174,7 +177,7 @@ void Skills () {
   chassis->moveDistance(2.3_ft);
   
   // setup for tower
-  Roller.moveRelative(-600, -100);
+  Roller.moveRelative(-1200, -200);
   pros::delay(300);
   LiftMotor.moveRelative(450, 100);
   while (AnglerAngle.get() <= 35) {
@@ -199,7 +202,7 @@ void Skills () {
   
   // set up for tower
   chassis->moveDistance(-10_in);
-  Roller.moveRelative(-600, -100);
+  Roller.moveRelative(-1200, -200);
   pros::delay(300);
   LiftMotor.moveRelative(450, 100);
   while (AnglerAngle.get() <= 35) {

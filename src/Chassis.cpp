@@ -20,13 +20,10 @@ std::shared_ptr<OdomChassisController> chassis = ChassisControllerBuilder()
   .withMaxVelocity(150)
   .withSensors(leftEncoder, rightEncoder)
     .withGains(
-        // power, small tooner, keep from over shooting.
         {0.0035, 0, 0}, // Distance controller gains
         {0.003, 0, 0}, // Turn controller gains
         {0.002, 0, 0.00006}  // Angle controller gains (helps drive straight)
     )
-    // green gearset, 4 inch wheel diameter, 11.5 inch wheelbase
-    //                                                 was 21_in
     .withDimensions(AbstractMotor::gearset::green, {{3.5_in, 23.5_in}, imev5BlueTPR})
     .withOdometry() // use the same scales as the chassis (above)
     .buildOdometry(); // build an odometry chassis
@@ -49,8 +46,6 @@ void ChassisOpcontrol(void* param) {
   
   ControllerButton fieldCentericToggle(ControllerDigital::X);
   ControllerButton gyroReset(ControllerDigital::Y);
-  // ControllerButton test(ControllerDigital::B);
-  // ControllerButton test(ControllerDigital::down);
 
   while (isAuton == false) {
     chassisHeading = IMU.get_heading() -headingError;
@@ -97,7 +92,6 @@ void ChassisOpcontrol(void* param) {
     }
     
     if (gyroReset.isPressed()) {
-      // Gyro.reset();
       headingError = IMU.get_heading();
     }
     
